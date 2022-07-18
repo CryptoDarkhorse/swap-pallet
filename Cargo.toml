@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "pallets/pallet-erc20",
+    "pallets/pallet-swap",
+]
+[profile.release]
+panic = "unwind"
