@@ -26,6 +26,10 @@ sp-core = { default-features = false, version = "6.0.0", git = "https://github.c
 sp-io = { default-features = false, version = "6.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.26" }
 sp-runtime = { default-features = false, version = "6.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.26" }
 
+[dependencies.pallet-erc20]
+default-features = false
+path = '../pallet-erc20'
+
 [features]
 default = ["std"]
 std = [
