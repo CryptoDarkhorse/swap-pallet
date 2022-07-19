@@ -1,6 +1,4 @@
 #![cfg_attr(not(feature = "std"), no_std)]
-
-pub use codec::{Decode, Encode};
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/v3/runtime/frame>
@@ -15,60 +13,48 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
-#[derive(Clone, Eq, PartialEq, Encode, Decode)]
-#[cfg_attr(feature = "std", derive(Debug))]
-pub struct Swap<AccountId, TokenId> {
-    // The token being swapped.
-    token_id: TokenId,
-    // The "swap token" id.
-    swap_token: TokenId,
-    // This swap account.
-    account: AccountId,
-}
-
 #[frame_support::pallet]
 pub mod pallet {
     use frame_support::pallet_prelude::*;
+    use frame_support::traits::{Currency, ExistenceRequirement};
     use frame_system::pallet_prelude::*;
-
+    use sp_core::U256;
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
-    pub trait Config: frame_system::Config + pallet_erc20::Config {
+    pub trait Config: frame_system::Config {
         /// Because this pallet emits events, it depends on the runtime's definition of an event.
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
+        type Currency: Currency<Self::AccountId>;
     }
+
+    type BalanceOf<T> =
+        <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
     pub struct Pallet<T>(_);
 
-    // The pallet's runtime storage items.
-    // https://docs.substrate.io/v3/runtime/storage
     #[pallet::storage]
-    #[pallet::getter(fn something)]
-    // Learn more about declaring storage items:
-    // https://docs.substrate.io/v3/runtime/storage#declaring-storage-items
-    pub type Something<T> = StorageValue<_, u32>;
+    #[pallet::getter(fn order_count)]
+    pub type OrderCount<T: Config> = StorageValue<_, U256, ValueQuery>;
 
-    // #[pallet::storage]
-    // #[pallet::getter(fn something)]
-    // pub type Something<T> = StorageValue<_, u32>;
+    #[pallet::storage]
+    #[pallet::getter(fn order_owners)]
+    pub type OrderOwners<T: Config> =
+        StorageMap<_, Blake2_128Concat, U256, T::AccountId, ValueQuery>;
 
     // Pallets use events to inform users when important changes are made.
     // https://docs.substrate.io/v3/runtime/events-and-errors
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        /// Event documentation should end with an array that provides descriptive names for event
-        /// parameters. [something, who]
-        SomethingStored(u32, T::AccountId),
-
         // parameters: [token_id, amount, price, owner]
-        SellOrderCreated(u128, u128, u128, T::AccountId),
+        SellOrderCreated(u128, U256, U256, T::AccountId),
         // parameters: [order_id, status]
         SellOrderCancelled(u128, bool),
         // parameters: [order_id, amount of token sold, amount paid, seller, buyer]
-        BuyOrderFilled(u128, u128, u128, T::AccountId, T::AccountId),
+        BuyOrderFilled(u128, U256, U256, T::AccountId, T::AccountId),
     }
 
     // Errors inform users that something went wrong.
@@ -113,6 +99,9 @@ pub mod pallet {
         TooExpensiveTokens,
     }
 
+    #[pallet::hooks]
+    impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
+
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
     // These functions materialize as "extrinsics", which are often compared to transactions.
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
@@ -123,12 +112,14 @@ pub mod pallet {
         pub fn create_sell_order(
             origin: OriginFor<T>,
             token_id: u128,
-            volume: u128,
-            price: u128,
+            volume: U256,
+            price: U256,
+            currency_amount: BalanceOf<T>, // Amount of base currency to lock.
         ) -> DispatchResult {
             let who = ensure_signed(origin)?;
 
             // TODO: implement
+            T::Currency::transfer(&who, &who, currency_amount, ExistenceRequirement::KeepAlive)?;
 
             Self::deposit_event(Event::SellOrderCreated(token_id, volume, price, who));
             Ok(())
@@ -149,15 +140,15 @@ pub mod pallet {
         #[pallet::weight(10_000)]
         pub fn buy_order(
             origin: OriginFor<T>,
-            _project_id: u128,
-            _bundle_id: u128,
-            volume: u128,
+            _project_id: u32,
+            _bundle_id: u32,
+            price: U256,
+            volume: U256,
         ) -> DispatchResult {
             let buyer = ensure_signed(origin)?;
 
             // TODO: implement
 
-            let price: u128 = 0;
             let order_id: u128 = 0;
             let seller: T::AccountId = buyer.clone();
 
