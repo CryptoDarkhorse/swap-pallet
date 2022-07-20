@@ -1,13 +1,13 @@
 [package]
-authors = ['Vladimir Ostapenco', 'François Branciard']
-description = 'FRAME pallet archipel for defining custom runtime logic.'
+authors = ['Cameron Knight']
+description = 'FRAME swap pallet'
 edition = '2018'
 homepage = 'https://github.com/luguslabs/archipel'
-license = 'Apache2'
-name = 'pallet-archipel'
+license = 'Unlicensed'
+name = 'pallet-swap'
 readme = 'README.md'
 repository = 'https://github.com/luguslabs/archipel'
-version = '3.0.0'
+version = '0.1.0'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
@@ -24,6 +24,10 @@ serde = '1.0.119'
 sp-core = {default-features = false, version = '3.0.0', git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-05'}
 sp-io = {default-features = false, version = '3.0.0', git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-05'}
 sp-runtime = {default-features = false, version = '3.0.0', git = 'https://github.com/paritytech/substrate.git', tag = 'monthly-2021-05'}
+
+[dependencies.pallet-erc20]
+default-features = false
+path = '../pallet-erc20'
 
 [features]
 default = ['std']
