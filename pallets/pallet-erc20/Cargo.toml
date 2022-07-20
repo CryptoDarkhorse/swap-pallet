@@ -2,11 +2,11 @@
 authors = ['Cameron Knight']
 description = 'erc-20 functionality implementation'
 edition = '2021'
-homepage = 'https://github.com/luguslabs/archipel'
+homepage = 'https://github.com/CryptoDarkhorse/swap-pallet'
 license = 'Unlicense'
 name = 'pallet-erc20'
 readme = 'README.md'
-repository = 'https://github.com/luguslabs/archipel'
+repository = 'https://github.com/CryptoDarkhorse/swap-pallet'
 version = '0.1.0'
 
 [package.metadata.docs.rs]

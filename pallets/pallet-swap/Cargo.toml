@@ -2,11 +2,11 @@
 authors = ['Cameron Knight']
 description = 'FRAME swap pallet'
 edition = '2018'
-homepage = 'https://github.com/luguslabs/archipel'
+homepage = 'https://github.com/CryptoDarkhorse/swap-pallet'
 license = 'Unlicensed'
 name = 'pallet-swap'
 readme = 'README.md'
-repository = 'https://github.com/luguslabs/archipel'
+repository = 'https://github.com/CryptoDarkhorse/swap-pallet'
 version = '0.1.0'
 
 [package.metadata.docs.rs]
