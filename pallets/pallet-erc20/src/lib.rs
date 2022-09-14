@@ -166,6 +166,11 @@ pub mod pallet {
             Ok(())
         }
 
+        #[pallet::weight(10_000)]
+        pub fn get_project_details(_origin: OriginFor<T>, _asset_id: u64) -> DispatchResult {
+            Ok(())
+        }
+
         /// Allow spender to spend amount from origin account balance
         #[pallet::weight(<T as pallet::Config>::WeightInfo::approve())]
         pub fn approve(

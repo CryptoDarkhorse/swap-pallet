@@ -113,9 +113,10 @@ pub mod pallet {
             price: U256,
         ) -> DispatchResultWithPostInfo {
             let seller = ensure_signed(origin.clone())?;
+            ERC20::<T>::get_project_details(origin.clone(), token_id)?;
 
             // transfer token to owner
-            ERC20::<T>::transfer(origin, <Owner<T>>::get(), volume)?;
+            ERC20::<T>::transfer(origin.clone(), <Owner<T>>::get(), volume)?;
 
             let order_id = Self::order_count();
 
@@ -157,12 +158,13 @@ pub mod pallet {
         pub fn buy_order(
             origin: OriginFor<T>,
             order_id: u64,
-            _project_id: u32,
-            _bundle_id: u32,
+            token_id: u64,
             volume: U256,
             currency_amount: BalanceOf<T>,
         ) -> DispatchResult {
             let buyer = ensure_signed(origin.clone())?;
+
+            ERC20::<T>::get_project_details(origin.clone(), token_id)?;
 
             // check validity of order
             ensure!(order_id <= Self::order_count(), Error::<T>::InvalidOrderId);
